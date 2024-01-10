@@ -10,11 +10,24 @@ router.all("*", (req, res, next) => {
   next();
 });
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    res.render("admin/index", { title: "Admin" });
+    const data = await News.find();
+    res.render("admin/index", { title: "Admin", data });
   } catch (err) {
-    console.error(err);
+    console.error("Error".red, err);
+  }
+});
+
+router.get("/news/delete/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    await News.findByIdAndDelete(id);
+    console.log(`USUNIĘTO ${id} Z BAZY DANYCH`.bgYellow);
+    res.redirect("/admin");
+  } catch (error) {
+    console.error("Error deleting data ".red, err);
   }
 });
 
@@ -27,22 +40,29 @@ router.get("/news/add", (req, res) => {
 });
 
 router.post("/news/add", async (req, res) => {
-  try {
-    const body = req.body;
-    const newsData = new News(body);
-    const errors = newsData.validateSync();
-    console.log(errors);
-    console.log(body);
+  const body = req.body;
+  const newsData = new News(body);
+  const errors = newsData.validateSync();
 
+  if (errors) {
+    //brak uzupełnionego pola required
+    return res.render("admin/news-form", {
+      title: "Dodaje news",
+      errors: errors.errors,
+      body, // Dane, które użytkownik wprowadził w formularzu
+    });
+  }
+
+  try {
     await newsData.save();
-    console.log(`DODANO ${body.title} DO BAZY DANYCH`.bgGreen);
-    res.redirect("/news"); // Przekierowanie po pomyślnym dodaniu.
+    console.log(`DODANO ${body.title} DO BAZY DANYCH`);
+    res.redirect("/admin"); // Przekierowanie po pomyślnym dodaniu
   } catch (err) {
-    console.error("Error".red, err);
+    console.error("Error", err);
     res.render("admin/news-form", {
       title: "Wystąpił Błąd",
-      errors: err.errors,
-      body,
+      errors: err.errors, // Błędy, jeśli save() zwróci wyjątek
+      body: body,
     });
   }
 });

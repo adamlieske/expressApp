@@ -2,4 +2,23 @@ extends ../layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to #{title} 
+  button(onclick="location.href='/admin/news/add'") Dodaj News
+
+  div(style='height: 40px;')
+
+  table
+    thead
+      tr
+        th ID
+        th Tytuł
+        th Data Dodania
+        th Akcja
+    tbody
+      each item, index in data
+        tr
+          td= index + 1
+          td= item.title
+          td= item.created.toLocaleDateString("pl-PL")
+          td
+            a(href=`/admin/news/delete/${item._id}`) Usuń
