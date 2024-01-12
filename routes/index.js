@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
-const login = "admin";
-const password = "123";
+const { logAdmin } = require("../config.js");
+const { login, password } = logAdmin;
 
 /* GET home page. */
 router.get("/", (req, res) => {
@@ -15,12 +14,12 @@ router.get("/login", (req, res) => {
 
 router.post("/login", (req, res) => {
   const body = req.body;
-
   if (body.login === login && body.password === password) {
     req.session.admin = 1;
     res.redirect("/admin");
   } else {
     res.redirect("/login");
+    console.log("cos jest nie tak w if");
   }
 });
 

@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
       created: -1,
     });
 
-    res.render("news", { title: "Admin", data, search });
+    res.render("news", { title: "News", data, search });
   } catch (err) {
     console.error("Error".red, err);
   }
