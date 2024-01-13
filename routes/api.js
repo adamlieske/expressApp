@@ -4,6 +4,8 @@ const News = require("../models/news.js");
 
 router.get("/", async (req, res) => {
   try {
+    const search = req.query.search || "";
+
     const data = await News.find({
       title: new RegExp(search.trim(), "i"),
     }).sort({
